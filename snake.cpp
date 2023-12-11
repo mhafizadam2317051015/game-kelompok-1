@@ -1,40 +1,40 @@
 #include <iostream>
-#include <curses.h>
-#include <unistd.h>
+#include <curses.h>     //manipulasi konsol dan penggambaran layar
+#include <unistd.h>     //fungsi sleep dan fitur spesifik Unix lainnya
 #include <windows.h>
-#include <cstdlib>
-#include <ctime>
+#include <cstdlib>        //fungsi library standar seperti rand 
+#include <ctime>         //fungsi terkait waktu
 using namespace std;
 
-bool gameOver;
-const int lebar = 50;
-const int tinggi = 20;
+bool gameOver;                                     //menunjukkan status permainan
+const int lebar = 50;                            //lebar bidang permainan
+const int tinggi = 20;                       // Tinggi bidang permainan
 int x, y, posisiBuahX, posisiBuahY, skor;
 int posisiEkorX[100], posisiEkorY[100];
 int panjangEkor;
-enum eArah { BERHENTI = 0, KIRI, KANAN, ATAS, BAWAH };
+enum eArah { BERHENTI = 0, KIRI, KANAN, ATAS, BAWAH };    //arah ular (BERHENTI, KIRI, KANAN, ATAS, BAWAH)
 eArah arah;
 
-void loading(){
-	system ("color 2");
+void loading(){                                        
+	system ("color 2");                         //warna teks
 	initscr();
-mvprintw(15,46,"PRESS ANY KEY TO START");
+mvprintw(15,46,"PRESS ANY KEY TO START");          //tombol mulai    
 	refresh();
 	Sleep(100);
 	getch();
 	clear();
 		
 for (int y=0; y<3; y++){
-	mvprintw(12,55,"LOADING");
+	mvprintw(12,55,"LOADING");                           //menampilkan layar loading dengan animasi
 	mvprintw(13,50, "-------------------");
-	mvprintw(14,50, "|                 |");
+	mvprintw(14,50, "|                 |");    
 	mvprintw(15,50, "-------------------");
 }
 
 for (int a=1; a<=2; a++){
 	mvprintw(14,51,"                 ");
 	for (int f=1;f<17;f++){
-	mvprintw(14,50+f,">>");
+	mvprintw(14,50+f,">>");                  //animasi >> loading
 	refresh();
 	Sleep(100);
 }
@@ -47,7 +47,7 @@ for(int f=0; f<20; f++){
     mvprintw(25-f,25," db   d8b   db d88888b db       .o88b.  .d88b.  .88b  d88. d88888b       ");
     mvprintw(26-f,25," 88   I8I   88 88'     88      d8P  Y8 .8P  Y8. 88'YbdP`88 88'           ");
     mvprintw(27-f,25," 88   I8I   88 88ooooo 88      8P      88    88 88  88  88 88ooooo       ");
-    mvprintw(28-f,25," Y8   I8I   88 88~~~~~ 88      8b      88    88 88  88  88 88~~~~~       ");
+    mvprintw(28-f,25," Y8   I8I   88 88~~~~~ 88      8b      88    88 88  88  88 88~~~~~       ");           //animasi welcome
     mvprintw(29-f,25," `8b d8'8b d8' 88.     88booo. Y8b  d8 `8b  d8' 88  88  88 88.           ");
     mvprintw(30-f,25,"  `8b8' `8d8'  Y88888P Y88888P  `Y88P'  `Y88P'  YP  YP  YP Y88888P       ");
 	mvprintw(31-f,25,"                                                                          ");
@@ -55,36 +55,36 @@ refresh();
 Sleep(100);
 }
 }
-void Setup()
+void Setup()                     //inisialisasi variabel status permainan ke nilai awal
 {
     gameOver = false;
     arah = BERHENTI;
     x = lebar / 2;
     y = tinggi / 2;
-    posisiBuahX = rand() % lebar;
+    posisiBuahX = rand() % lebar;    //posisi acak untuk buah dan kepala ular
     posisiBuahY = rand() % tinggi;
     skor = 0;
 }
 
-void Draw()
+void Draw()                          //mencetak bidang permainan dengan ular, buah, dan skor
 {
     erase();
 
     printw("\n ");
-    for (int i = 0; i < lebar + 2; i++)
+    for (int i = 0; i < lebar + 2; i++)  // batas papan
         printw("#");
     printw("\n");
 
 
-    for (int i = 0; i < tinggi; i++)
+    for (int i = 0; i < tinggi; i++)                   //loop bersarang untuk mencetak batas lapangan, segmen ular, dan buah
     {
         for (int j = 0; j < lebar; j++)
         {
             if (j == 0)
-                printw(" #");
+                printw(" #");                           // papan
             if (i == y && j == x)
-                printw("O");
-            else if (i == posisiBuahY && j == posisiBuahX)
+                printw("O");                                     //ular
+            else if (i == posisiBuahY && j == posisiBuahX)    //buah atau ($)
                 printw("$");
             else
             {
@@ -93,7 +93,7 @@ void Draw()
                 {
                     if (posisiEkorX[k] == j && posisiEkorY[k] == i)
                     {
-                        printw("o");
+                        printw("o");                       //ular makin panjang jika makan buah($)
                         print = true;
                     }
                 }
@@ -110,35 +110,35 @@ void Draw()
     printw(" ");
     for (int i = 0; i < lebar + 2; i++)
         printw("#");
-    printw("\n SCORE : %d\n", skor);
+    printw("\n SCORE : %d\n", skor);   //memperbarui tampilan skor
 
         mvprintw(16,57,"CONTROLS :");
         mvprintw(18,57,"W = UP");
-        mvprintw(19,57,"A = LEFT");
+        mvprintw(19,57,"A = LEFT");     //deskripsi kontrol game snake wasd keys
         mvprintw(20,57,"S = DOWN");
         mvprintw(21,57,"D = RIGHT");
         
         mvprintw(2,57,".d8888. d8b   db  .d8b.  db   dD d88888b");
         mvprintw(3,57,"88'  YP 888o  88 d8' `8b 88 ,8P' 88'    ");
         mvprintw(4,57,"`8bo.   88V8o 88 88ooo88 88,8P   88ooooo");
-        mvprintw(5,57,"  `Y8b. 88 V8o88 88~~~88 88`8b   88~~~~~");
+        mvprintw(5,57,"  `Y8b. 88 V8o88 88~~~88 88`8b   88~~~~~");      //judul game
         mvprintw(6,57,"db   8D 88  V888 88   88 88 `88. 88.    ");
         mvprintw(7,57,"`8888Y' VP   V8P YP   YP YP   YD Y88888P");
         
         mvprintw(9,57,"HOW TO PLAY :");
         mvprintw(11,57,"1. MOVE WITH WASD KEYS");
         mvprintw(12,57,"2. COLLECT THE $");
-        mvprintw(13,57,"3. DON'T HIT THE WALL!");
+        mvprintw(13,57,"3. DON'T HIT THE WALL!");                             //deskripsi cara main snake
         mvprintw(14,57,"3. DON'T HIT THE THE TAIL OF THE SNAKE!");
 }
 
-void Input()
+void Input()                    // input dari pengguna menggunakan getch()
 {
-    int ch = getch();
+    int ch = getch(); 
 
-    switch (ch)
-    {
-    case 'a':
+    switch (ch)                         // gerak dengan wasd (memperbarui variabel arah)
+    {                                    //hanya memungkinkan perubahan arah yang tidak berlawanan dengan arah saat ini
+    case 'a':                             
         if (arah != KANAN)  
             arah = KIRI;
         break;
@@ -159,16 +159,16 @@ void Input()
     }
 }
 
-void Logic()
+void Logic()                           //memperbarui posisi kepala ular berdasarkan arah saat ini
 {
     int prevX = posisiEkorX[0];
     int prevY = posisiEkorY[0];
     int prev2X, prev2Y;
-    posisiEkorX[0] = x;
+    posisiEkorX[0] = x;                  
     posisiEkorY[0] = y;
     for (int i = 1; i < panjangEkor; i++)
     {
-        prev2X = posisiEkorX[i];
+        prev2X = posisiEkorX[i];                     //memperbarui posisi segmen ekor ular (biar ekor terus mengikuti badan ular)
         prev2Y = posisiEkorY[i];
         posisiEkorX[i] = prevX;
         posisiEkorY[i] = prevY;
@@ -177,7 +177,7 @@ void Logic()
     }
     switch (arah)
     {
-    case KIRI:
+    case KIRI:                   //animasi geraknya ular
         x--;
         break;
     case KANAN:
@@ -192,7 +192,7 @@ void Logic()
     default:
     	break;
     }
-    if (x > lebar || x < 0 || y > tinggi || y < 0)
+    if (x > lebar || x < 0 || y > tinggi || y < 0)   //memeriksa tabrakan dengan dinding, dirinya sendiri, dan buah
         gameOver = true;
 
     for (int i = 0; i < panjangEkor; i++)
@@ -203,7 +203,7 @@ void Logic()
     {
         srand(time(0));
         skor += 10;
-        posisiBuahX = rand() % lebar;
+        posisiBuahX = rand() % lebar;     // meningkatkan skor, memperpanjang ular jika buah dimakan
         posisiBuahY = rand() % tinggi;
         panjangEkor++;
     }
@@ -221,7 +221,7 @@ int main()
     std::cin.tie(NULL);
 
     Setup();
-    while (!gameOver)
+    while (!gameOver)             //mengakhiri loop permainan ketika gameOver menjadi true
     {
         Draw();
         Input();
