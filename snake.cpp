@@ -21,7 +21,7 @@ void loading(){
 mvprintw(15,46,"PRESS ANY KEY TO START");          //tombol mulai    
 	refresh();
 	Sleep(100);
-	getch();
+	getch();  //biar lanjut
 	clear();
 		
 for (int y=0; y<3; y++){
